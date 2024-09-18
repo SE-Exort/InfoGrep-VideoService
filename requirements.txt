@@ -1,0 +1,9 @@
+python-dotenv
+fastapi
+uvicorn
+transformers
+torch
+diffusers
+scipy
+serpapi
+python-dotenv
