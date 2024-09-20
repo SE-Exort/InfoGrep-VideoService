@@ -1,10 +1,11 @@
+import os
+
 from openai import OpenAI
 from config import OPENAI_KEY
 
 client = OpenAI(api_key=OPENAI_KEY)
 
-def tts(save_path, input_text):
-    print(f"Converting {input_text} to {save_path}")
+def tts(frame: int, input_text: str) -> str:
     
     response = client.audio.speech.create(
         model="tts-1",
@@ -12,6 +13,12 @@ def tts(save_path, input_text):
         input=input_text
     )
 
-    response.stream_to_file(save_path)
+    audio_path = f"audio/{frame}.mp3"
+    if not os.path.exists("audio/"):
+        os.makedirs("audio/")
+    
+    response.stream_to_file(audio_path)
 
-    print(f"{save_path} created!")
+    print(f"{audio_path} created! for {input_text} \n")
+
+    return audio_path

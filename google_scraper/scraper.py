@@ -16,7 +16,7 @@ class GoogleScraper():
         self.location = location
         self.lang = lang
 
-    def scrape(self, q: AnyStr, frame: int, page=1) -> None:
+    def scrape(self, q: AnyStr, frame: int, page=1) -> AnyStr:
         print("Scraping for q: ", q)
 
         image_results = GoogleSearch({
@@ -34,8 +34,8 @@ class GoogleScraper():
             height, width = result["original_width"], result["original_height"]
             if width >= 540 and height >= 360:
                 try:
-                    self.download_image(url, frame)
-                    return
+                    img_path = self.download_image(url, frame)
+                    return img_path
                 except ImageInvalid:
                     continue
         
@@ -51,7 +51,7 @@ class GoogleScraper():
         except Exception:
             return False
 
-    def download_image(self, url: AnyStr, frame: int) -> None:
+    def download_image(self, url: AnyStr, frame: int) -> AnyStr:
         image_ext = url.split(".")[-1]
         if image_ext not in ["jpg", "jpeg", "png", "webp", "tiff"]:
             raise ImageInvalid
@@ -67,4 +67,5 @@ class GoogleScraper():
             if not self.valid_image(img_file):
                 os.remove(img_file)
                 raise ImageInvalid
-
+        
+        return img_file
