@@ -1,28 +1,11 @@
-from transformers import (
-    TokenClassificationPipeline,
-    AutoModelForTokenClassification,
-    AutoTokenizer,
-)
-from transformers.pipelines import AggregationStrategy
-import numpy as np
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# Define keyphrase extraction pipeline
-class KeyphraseExtractionPipeline(TokenClassificationPipeline):
-    def __init__(self, model, *args, **kwargs):
-        super().__init__(
-            model=AutoModelForTokenClassification.from_pretrained(model),
-            tokenizer=AutoTokenizer.from_pretrained(model),
-            *args,
-            **kwargs
-        )
+tokenizer = AutoTokenizer.from_pretrained("beogradjanka/bart_finetuned_keyphrase_extraction")
+model = AutoModelForSeq2SeqLM.from_pretrained("beogradjanka/bart_finetuned_keyphrase_extraction")
 
-    def postprocess(self, all_outputs):
-        results = super().postprocess(
-            all_outputs=all_outputs,
-            aggregation_strategy=AggregationStrategy.FIRST,
-        )
-        return np.unique([result.get("word").strip() for result in results])
-
-# Load pipeline
-model_name = "ml6team/keyphrase-extraction-distilbert-inspec"
-extractor = KeyphraseExtractionPipeline(model=model_name)
+def extract(text: str):
+    tokenized_text = tokenizer(text, return_tensors='pt')
+    translation = model.generate(**tokenized_text)
+    translated_text = tokenizer.batch_decode(translation, skip_special_tokens=True)[0]
+    formatted_texts = [phrase.strip() for phrase in translated_text.split(",")]
+    return list(set(formatted_texts))

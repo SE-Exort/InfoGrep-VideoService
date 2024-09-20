@@ -1,4 +1,5 @@
 python-dotenv
+requests
 fastapi
 uvicorn
 transformers
@@ -7,3 +8,7 @@ diffusers
 scipy
 serpapi
 python-dotenv
+pillow
+openai
+numpy==1.26.1
+nltk
