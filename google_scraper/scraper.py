@@ -51,7 +51,7 @@ class GoogleScraper():
         except Exception:
             return False
 
-    def download_image(self, url: AnyStr, frame: int) -> AnyStr:
+    def download_image(self, url: AnyStr, frame: int|str) -> AnyStr:
         image_ext = url.split(".")[-1]
         if image_ext not in ["jpg", "jpeg", "png", "webp", "tiff"]:
             raise ImageInvalid
