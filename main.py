@@ -2,7 +2,7 @@
 
 import os
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from starlette.middleware.cors import CORSMiddleware
 
 from router import router
@@ -14,6 +14,15 @@ os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 origins = [
     "*",
 ]
+
+@app.middleware("http")
+async def add_open_telemetry_headers(request: Request, call_next):
+    response = await call_next(request)
+    for k, v in request.headers.items():
+        if k.startswith("x-") or k.startswith("trace"):
+            response.headers[k] = v
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
