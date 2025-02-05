@@ -8,6 +8,7 @@ RUN (apt-get -y upgrade)
 RUN (apt-get -y update)
 RUN (apt-get install -y ffmpeg)
 RUN (pip3 install -r requirements.txt)
+RUN (pip3 install -r ./InfoGrep_BackendSDK/requirements.txt)
 
 EXPOSE 8879
 CMD ["python3", "main.py"]
