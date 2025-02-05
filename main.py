@@ -2,12 +2,15 @@
 
 import os
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from router import router
+from InfoGrep_BackendSDK.middleware import TracingMiddleware, LoggingMiddleware
+from InfoGrep_BackendSDK.infogrep_logger.logger import Logger
 
 app = FastAPI()
+service_logger = Logger("VideoServiceLogger")
 
 os.environ["no_proxy"]="*"
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -15,14 +18,8 @@ origins = [
     "*",
 ]
 
-@app.middleware("http")
-async def add_open_telemetry_headers(request: Request, call_next):
-    response = await call_next(request)
-    for k, v in request.headers.items():
-        if k.startswith("x-") or k.startswith("trace"):
-            response.headers[k] = v
-    return response
-
+app.add_middleware(TracingMiddleware)
+app.add_middleware(LoggingMiddleware, logger=service_logger)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
